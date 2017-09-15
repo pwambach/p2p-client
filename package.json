@@ -1,0 +1,23 @@
+{
+  "name": "webar-streamer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/WebARStreamer.js",
+  "scripts": {
+    "start": "http-server",
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
+  "author": "Philipp Wambach <wambach@ubilabs.com>",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-prettier": "^2.3.0",
+    "events": "^1.1.1",
+    "http-server": "^0.10.0",
+    "webpack": "^3.5.5"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.6.1"
+  }
+}
