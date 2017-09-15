@@ -1,12 +1,13 @@
 import {EventEmitter} from 'events';
 
-const PROTOCOL = 'webrtc-cutom-3425415';
+const PROTOCOL = 'webrtc-custom-signaling';
+let DEBUG = false;
 
 export default class Signaling extends EventEmitter {
-  constructor(url, protocol = PROTOCOL) {
+  constructor(url, protocol = PROTOCOL, debug = false) {
     super();
 
-    this.id = Math.round(Math.random() * 1000).toString();
+    this.id = Math.round(Math.random() * 100000).toString();
 
     this.ws = new WebSocket(url, protocol);
     this.ws.onmessage = () => this.onMessage();
@@ -17,6 +18,8 @@ export default class Signaling extends EventEmitter {
       const message = {type: 'register', payload: {id: this.id}};
       this.ws.send(JSON.stringify(message));
     };
+
+    DEBUG = debug;
   }
 
   send(targetId, message) {
@@ -30,11 +33,10 @@ export default class Signaling extends EventEmitter {
 
   onMessage() {
     const signal = JSON.parse(event.data);
-    console.log('onmessage', signal);
     const {source, target} = signal;
 
     if (target !== this.id) {
-      console.log(`Signaling: Wrong target id (${target})`);
+      log(`Signaling: Wrong target id (${target})`);
       return;
     }
 
@@ -46,9 +48,21 @@ export default class Signaling extends EventEmitter {
 }
 
 function onError(event) {
-  console.error('Signaling: Connection error: ', event);
+  error('Signaling: Connection error: ', event);
 }
 
 function onClose() {
-  console.log('Signaling: Connection closed');
+  log('Signaling: Connection closed');
+}
+
+function log(message) {
+  if (DEBUG) {
+    console.log(message);
+  }
+}
+
+function error(message) {
+  if (DEBUG) {
+    console.error(message);
+  }
 }

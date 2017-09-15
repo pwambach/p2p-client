@@ -1,7 +1,7 @@
 module.exports = {
   entry: {
     example: './example/index.js',
-    'webar-streamer': './src/WebARStreamer.js'
+    'p2p-client': './src/p2p-client.js'
   },
   output: {
     filename: './build/[name].js'

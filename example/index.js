@@ -1,13 +1,13 @@
-import WebARStreamer from '../src/WebARStreamer';
+import P2PClient from '../src/p2p-client';
 
-const streamer = new WebARStreamer();
-console.log('Local Id: ', streamer.id);
+const p2p = new P2PClient();
+console.log('Local Id: ', p2p.id);
 
 if (window.location.search.includes('init')) {
-  streamer.on('ready', () => {
+  p2p.on('ready', () => {
     console.log('READY');
-    streamer.connect('242');
+    p2p.connect('48006');
   });
 }
 
-streamer.on('data', data => console.log('incoming data', data));
+p2p.on('data', data => console.log('incoming data', data));

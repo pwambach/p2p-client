@@ -1,9 +1,12 @@
 import {EventEmitter} from 'events';
-import Signaling from './Signaling';
+import Signaling from './signaling';
 
-export default class WebARStreamer extends EventEmitter {
-  constructor() {
+let DEBUG = false;
+
+export default class P2PClient extends EventEmitter {
+  constructor(debug = false) {
     super();
+    DEBUG = debug;
 
     this.signaling = new Signaling('wss://p2p-signaling-server.now.sh');
     this.id = this.signaling.id;
@@ -61,9 +64,7 @@ export default class WebARStreamer extends EventEmitter {
             return localAnswer;
           })
           .then(localAnswer => this.peer.setLocalDescription(localAnswer))
-          .catch(error =>
-            console.warn('WebARStreamer Error (receive offer):', error)
-          );
+          .catch(error => warn('P2PClient Error (receive offer):', error));
         break;
 
       case 'answer':
@@ -73,15 +74,13 @@ export default class WebARStreamer extends EventEmitter {
       case 'candidate':
         this.peer
           .addIceCandidate(new RTCIceCandidate(candidate))
-          .catch(error =>
-            console.warn('WebARStreamer Error (add candidate):', error)
-          );
+          .catch(error => warn('P2PClient Error (add candidate):', error));
     }
   }
 
   connect(targetId) {
     if (!this.id) {
-      console.warn('WebARStreamer Error (not ready)');
+      warn('P2PClient Error (not ready)');
       return;
     }
 
@@ -102,15 +101,27 @@ export default class WebARStreamer extends EventEmitter {
         this.peer.setLocalDescription(offer);
         this.signaling.send(this.targetId, {type: 'offer', offer});
       })
-      .catch(error => console.warn('WebARStreamer Error (send offer):', error));
+      .catch(error => warn('P2PClient Error (send offer):', error));
   }
 
   onChannelReadyState() {
     const {readyState} = this.channel;
-    console.log('WebARStreamer Channel readystate:', readyState);
+    log('P2PClient Channel readystate:', readyState);
   }
 
   onChannelMessage(message) {
     this.emit('data', message.data);
+  }
+}
+
+function log(message) {
+  if (DEBUG) {
+    console.log(message);
+  }
+}
+
+function warn(message) {
+  if (DEBUG) {
+    console.warn(message);
   }
 }
