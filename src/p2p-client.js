@@ -42,8 +42,6 @@ export default class P2PClient extends EventEmitter {
       this.channel.onopen = () => this.onChannelReadyState();
       this.channel.onclose = () => this.onChannelReadyState();
       this.channel.onmessage = message => this.onChannelMessage(message);
-
-      setInterval(() => this.channel.send(new Float32Array(100)), 1000);
     };
   }
 
@@ -86,7 +84,7 @@ export default class P2PClient extends EventEmitter {
 
     this.targetId = targetId;
 
-    this.channel = this.peer.createDataChannel('pose', {
+    this.channel = this.peer.createDataChannel('data', {
       ordered: false,
       reliable: false
     });
@@ -102,6 +100,16 @@ export default class P2PClient extends EventEmitter {
         this.signaling.send(this.targetId, {type: 'offer', offer});
       })
       .catch(error => warn('P2PClient Error (send offer):', error));
+  }
+
+  send(data) {
+    if (
+      this.channel &&
+      this.channel.readyState === 'open' &&
+      this.channel.bufferedAmount < 1
+    ) {
+      this.channel.send(data);
+    }
   }
 
   onChannelReadyState() {
