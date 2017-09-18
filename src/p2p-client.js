@@ -114,7 +114,12 @@ export default class P2PClient extends EventEmitter {
 
   onChannelReadyState() {
     const {readyState} = this.channel;
-    log('P2PClient Channel readystate:', readyState);
+
+    if (readyState === 'open') {
+      this.emit('open');
+    }
+
+    log(`P2PClient Channel readystate: ${readyState}`);
   }
 
   onChannelMessage(message) {
