@@ -8,6 +8,7 @@ export default class Signaling extends EventEmitter {
     super();
 
     this.id = Math.round(Math.random() * 100000).toString();
+    this.id = leftPad(this.id, 5);
 
     this.ws = new WebSocket(url, protocol);
     this.ws.onmessage = () => this.onMessage();
@@ -65,4 +66,11 @@ function error(message) {
   if (DEBUG) {
     console.error(message);
   }
+}
+
+function leftPad(id, length) {
+  while (id.length < length) {
+    id = `0${id}`;
+  }
+  return id;
 }
